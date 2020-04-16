@@ -443,36 +443,69 @@ void stub_debug_5(void) {
 }
 
 /*
- * If Mario's object exists, this function tries to print available object debug
- * information depending on the debug sys ID. Additional information (updated obj
- * count, floor misses, and an unknown wall counter) is also printed.
+ * hey someone2639 your username is someone2639, why isnt the password 2639 you absolute idiot buffoon dumb idiot
  */
-void try_print_debug_mario_object_info(void) {
-    if (gMarioObject != NULL) {
-        switch (sDebugPage) {
-            case DEBUG_PAGE_CHECKSURFACEINFO:
-                print_surfaceinfo();
-                break;
-            case DEBUG_PAGE_EFFECTINFO:
-                print_effectinfo();
-                break;
-            case DEBUG_PAGE_ENEMYINFO:
-                print_enemyinfo();
-                break;
-            default:
-                break;
-        }
-    }
+#define INPUT_HEIGHT 0x05
+u32 correctPass = 0x02060309;
+u32 enteredPass = 0x00010203;
+u32 currentMask = INPUT_HEIGHT << 24;
+u8 passIndex = 0;
+#define BUTTON_DRIGHT	0x100
+#define BUTTON_DLEFT 	0x200
+#define BUTTON_DDOWN 	0x400
+#define BUTTON_DUP		0x800
 
-    print_debug_top_down_mapinfo("obj  %d", gObjectCounter);
+void winCondition(void) {
+	// that's a secret :eyes:
+}
 
-    if (gNumFindFloorMisses) {
-        print_debug_bottom_up("NULLBG %d", gNumFindFloorMisses);
-    }
+void shiftMaskLeft(void) {
+	if (currentMask != (INPUT_HEIGHT << 24)){
+		currentMask <<=8;
+		passIndex--;
+	}
+}
+void shiftMaskRight(void) {
+	if (currentMask != INPUT_HEIGHT){
+		currentMask >>=8;
+		passIndex++;
+	}
+}
+void incVal(void) {
+	u8 val = enteredPass >> (24 - (8*passIndex));
+	val = (val < 9) ? val + 1 : 0;
+	enteredPass &= ~(0xFF << (24 - (8*passIndex)));
+	enteredPass |= val << (24 - (8 * passIndex));
+}
+void decVal(void) {
+	u8 val = enteredPass >> (24 - (8*passIndex));
+	val = (val > 0) ? val - 1 : 9;
+	enteredPass &= ~(0xFF << (24 - (8*passIndex)));
+	enteredPass |= val << (24 - (8 * passIndex));
+}
 
-    if (gUnknownWallCount) {
-        print_debug_bottom_up("WALL   %d", gUnknownWallCount);
-    }
+void password_show(void) {
+	u8 i;
+	for(i = 0; i < 4; i++){
+	    print_text_fmt_int(55+(16*i), 55+(u8)(currentMask >> (24 - (8*i))),"%d",(u8)(enteredPass >> (24 - (8*i))));
+	}
+	if (gPlayer1Controller->buttonPressed == BUTTON_DLEFT) {
+		shiftMaskLeft();
+	}
+	if (gPlayer1Controller->buttonPressed == BUTTON_DRIGHT) {
+		shiftMaskRight();
+	}
+	if (gPlayer1Controller->buttonPressed == BUTTON_DUP) {
+		incVal();
+	}
+	if (gPlayer1Controller->buttonPressed == BUTTON_DDOWN) {
+		decVal();
+	}
+	if (gPlayer1Controller->buttonPressed & L_TRIG) {
+		if (enteredPass == correctPass) {
+			winCondition();
+		}
+	}
 }
 
 /*

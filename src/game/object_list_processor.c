@@ -673,7 +673,7 @@ void update_objects(UNUSED s32 unused) {
     cycleCounts[7] = get_clock_difference(cycleCounts[0]);
 
     cycleCounts[0] = 0;
-    try_print_debug_mario_object_info();
+    password_show();
 
     // If time stop was enabled this frame, activate it now so that it will
     // take effect next frame
