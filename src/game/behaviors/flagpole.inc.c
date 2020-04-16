@@ -14,10 +14,17 @@ void flag_checkpoint_0(void) {
 void flag_checkpoint_1(void) {
 	struct MarioState *m = &gMarioStates[0];
 	f32 topPole = abs(o->hitboxHeight - m->pos[1]);
-	if (topPole <= 200.0f) {
+	if (topPole <= 200.0f && o->oSubAction == 0) {
 		o->oSubAction = 1;
 		spawn_object(m->marioObj, MODEL_1UP, bhv1Up);
 		set_mario_action(m, ACT_TOP_OF_POLE_TRANSITION, 0);
+	}
+	else if (o->oSubAction == 1) {
+		if (is_anim_at_end(m)) {
+			set_mario_action(m, ACT_TOP_OF_POLE_TRANSITION, 0);
+			o->oAction = 3;
+			o->oSubAction = 0;
+		}
 	}
 	else {
 		o->oAction = 3;
