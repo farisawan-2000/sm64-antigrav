@@ -5,6 +5,7 @@
 #include "object_helpers.h"
 #include "audio/external.h"
 #include "print.h"
+#include "rendering_graph_node.h"
 #include "engine/surface_collision.h"
 #include "mario.h"
 #include "game_init.h"
@@ -502,6 +503,7 @@ void password_show(void) {
 		decVal();
 	}
 	if (gPlayer1Controller->buttonPressed & L_TRIG) {
+        isOrthoEnabled ^= 1;
 		if (enteredPass == correctPass) {
 			winCondition();
 		}

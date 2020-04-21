@@ -234,7 +234,19 @@ static void geo_process_ortho_projection(struct GraphNodeOrthoProjection *node) 
 /**
  * Process a perspective projection node.
  */
-static void geo_process_perspective(struct GraphNodePerspective *node) {
+
+
+Ortho g_ortho_args = {
+    -960.0f,
+    960.0f,
+    -720.0f,
+    720.0f,
+    0.0f,
+    16384.0f,
+    1.0f,
+};
+u16 isOrthoEnabled = 0;
+void geo_process_perspective(struct GraphNodePerspective *node) {
     if (node->fnNode.func != NULL) {
         node->fnNode.func(GEO_CONTEXT_RENDER, &node->fnNode.node, gMatStack[gMatStackIndex]);
     }
@@ -247,9 +259,14 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
 #else
         f32 aspect = (f32) gCurGraphNodeRoot->width / (f32) gCurGraphNodeRoot->height;
 #endif
-
-        guPerspective(mtx, &perspNorm, node->fov, aspect, node->near, node->far, 1.0f);
-        gSPPerspNormalize(gDisplayListHead++, perspNorm);
+        if (isOrthoEnabled) {
+            guOrtho(mtx, g_ortho_args.left, g_ortho_args.right,
+                g_ortho_args.bottom, g_ortho_args.top,
+                g_ortho_args.near, g_ortho_args.far, g_ortho_args.scale);
+        } else {
+            guPerspective(mtx, &perspNorm, node->fov, aspect, node->near, node->far, 1.0f);
+            gSPPerspNormalize(gDisplayListHead++, perspNorm);
+        }
 
         gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(mtx), G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
 
@@ -258,6 +275,13 @@ static void geo_process_perspective(struct GraphNodePerspective *node) {
         gCurGraphNodeCamFrustum = NULL;
     }
 }
+// void geo_process_perspective_2(struct GraphNodePerspective *node) {
+//     if (node->unused != 0) {
+//         Mat4 *x = &gMatStack;
+//         u16 y = gMatStackIndex;
+//         u32 size = sizeof(gMatStack[0]);
+//     }
+// }
 
 /**
  * Process a level of detail node. From the current transformation matrix,

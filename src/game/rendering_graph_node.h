@@ -3,6 +3,16 @@
 
 #include "engine/graph_node.h"
 
+typedef struct {
+    f32 left;
+    f32 right;
+    f32 bottom;
+    f32 top;
+    f32 near;
+    f32 far;
+    f32 scale;
+} Ortho;
+
 extern struct GraphNodeRoot *gCurGraphNodeRoot;
 extern struct GraphNodeMasterList *gCurGraphNodeMasterList;
 extern struct GraphNodePerspective *gCurGraphNodeCamFrustum;
@@ -10,6 +20,8 @@ extern struct GraphNodeCamera *gCurGraphNodeCamera;
 extern struct GraphNodeObject *gCurGraphNodeObject;
 extern struct GraphNodeHeldObject *gCurGraphNodeHeldObject;
 extern u16 gAreaUpdateCounter;
+extern u16 isOrthoEnabled;
+extern Ortho g_ortho_args;
 
 // after processing an object, the type is reset to this
 #define ANIM_TYPE_NONE                  0
