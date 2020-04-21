@@ -5,7 +5,6 @@
 #define NC_MODE_FIXED_NOMOVE      0x4
 #define NC_MODE_NOTURN            0x5
 
-
 extern void newcam_display_options();
 extern void newcam_check_pause_buttons();
 

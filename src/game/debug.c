@@ -7,10 +7,13 @@
 #include "print.h"
 #include "include/libc/stdio.h"
 #include "rendering_graph_node.h"
+#include "enhancements/bettercamera.h"
 #include "engine/surface_collision.h"
 #include "mario.h"
+#include "mario_step.h"
 #include "game_init.h"
 #include "main.h"
+#include "level_update.h"
 #include "debug.h"
 #include "object_list_processor.h"
 #include "behavior_data.h"
@@ -487,11 +490,11 @@ void decVal(void) {
 	enteredPass |= val << (24 - (8 * passIndex));
 }
 
-
 void password_show(void) {
 	u8 i;
+    print_text_fmt_int(40, 40, "%d", (gravConstant));
 	for(i = 0; i < 4; i++){
-	    print_text_fmt_int(55+(16*i), 55+(u8)(currentMask >> (24 - (8*i))),"%d",(u8)(enteredPass >> (24 - (8*i))));
+	    // print_text_fmt_int(55+(16*i), 55+(u8)(currentMask >> (24 - (8*i))),"%d",(u8)(enteredPass >> (24 - (8*i))));
 	}
 	if (gPlayer1Controller->buttonPressed == BUTTON_DLEFT) {
 		shiftMaskLeft();
@@ -518,20 +521,14 @@ void password_show(void) {
  * stageinfo)
  */
 void try_print_debug_mario_level_info(void) {
-    switch (sDebugPage) {
-        case DEBUG_PAGE_OBJECTINFO:
-            break; // no info list is printed for obj info.
-        case DEBUG_PAGE_CHECKSURFACEINFO:
-            print_checkinfo();
-            break;
-        case DEBUG_PAGE_MAPINFO:
-            print_mapinfo();
-            break;
-        case DEBUG_PAGE_STAGEINFO:
-            print_stageinfo();
-            break;
-        default:
-            break;
+    struct MarioState *m = gMarioState;
+    f32 floorDist = m->pos[1] - m->floorHeight;
+    f32 ceilDist = m->ceilHeight - m->pos[1];
+    if (floorDist < ceilDist) {
+        gravConstant = 1;
+    }
+    else {
+        gravConstant = -1;
     }
 }
 

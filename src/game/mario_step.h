@@ -19,4 +19,6 @@ extern s32 stationary_ground_step(struct MarioState *);
 extern s32 perform_ground_step(struct MarioState *);
 extern s32 perform_air_step(struct MarioState *, u32);
 
+extern s8 gravConstant;
+
 #endif /* _MARIO_STEP_H */

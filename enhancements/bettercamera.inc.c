@@ -55,7 +55,7 @@ struct newcam_hardpos
 //The camera position fields accept "32767" as an ignore flag.
 struct newcam_hardpos newcam_fixedcam[] =
 {
-{/*Level ID*/ 16,/*Area ID*/ 1,/*Permaswap*/ 0,/*Mode*/ NC_MODE_FIXED_NOMOVE, //Standard params.
+{/*Level ID*/ 16,/*Area ID*/ 1,/*Permaswap*/ 0,/*Mode*/ NC_MODE_8D, //Standard params.
 /*X begin*/ -540,/*Y begin*/ 800,/*Z begin*/ -3500, //Where the activation box begins
 /*X end*/ 540,/*Y end*/ 2000,/*Z end*/ -1500, //Where the activation box ends.
 /*Cam X*/ 0,/*Cam Y*/ 1500,/*Cam Z*/ -1000, //The position the camera gets placed for NC_MODE_FIXED and NC_MODE_FIXED_NOMOVE
