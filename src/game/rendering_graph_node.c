@@ -236,13 +236,23 @@ static void geo_process_ortho_projection(struct GraphNodeOrthoProjection *node) 
  */
 
 
+// Ortho g_ortho_args = {
+//     -960.0f,
+//     960.0f,
+//     -720.0f,
+//     720.0f,
+//     0.0f,
+//     16384.0f,
+//     1.0f,
+// };
+
 Ortho g_ortho_args = {
     -960.0f,
     960.0f,
     -720.0f,
     720.0f,
-    0.0f,
-    16384.0f,
+    -16384.0f,
+    8192.0f,
     1.0f,
 };
 u16 isOrthoEnabled = 0;

@@ -5,6 +5,7 @@
 #include "object_helpers.h"
 #include "audio/external.h"
 #include "print.h"
+#include "include/libc/stdio.h"
 #include "rendering_graph_node.h"
 #include "engine/surface_collision.h"
 #include "mario.h"
@@ -13,6 +14,7 @@
 #include "debug.h"
 #include "object_list_processor.h"
 #include "behavior_data.h"
+#include "ingame_menu.h"
 
 #define DEBUG_INFO_NOFLAGS (0 << 0)
 #define DEBUG_INFO_FLAG_DPRINT (1 << 0)
@@ -484,6 +486,7 @@ void decVal(void) {
 	enteredPass &= ~(0xFF << (24 - (8*passIndex)));
 	enteredPass |= val << (24 - (8 * passIndex));
 }
+
 
 void password_show(void) {
 	u8 i;

@@ -13,6 +13,7 @@
 #include "audio/external.h"
 #include "engine/graph_node.h"
 #include "thread6.h"
+#include "mario_actions_stationary.h"
 #include "../../enhancements/bettercamera.h"
 
 void play_flip_sounds(struct MarioState *m, s16 frame1, s16 frame2, s16 frame3) {
