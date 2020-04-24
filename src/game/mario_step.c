@@ -238,7 +238,7 @@ s32 stationary_ground_step(struct MarioState *m) {
     struct Object *marioObj = m->marioObj;
     u32 stepResult = GROUND_STEP_NONE;
 
-    mario_set_forward_vel(m, 0.0f);
+    // mario_set_forward_vel(m, 0.0f);
 
     takeStep = mario_update_moving_sand(m);
     takeStep |= mario_update_windy_ground(m);
@@ -325,8 +325,9 @@ s32 perform_ground_step(struct MarioState *m) {
     Vec3f intendedPos;
 
     for (i = 0; i < 4; i++) {
-        intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / 4.0f);
-        intendedPos[2] = m->pos[2] + m->floor->normal.y * (m->vel[2] / 4.0f);
+            intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / 4.0f);
+            intendedPos[2] = m->pos[2] + m->floor->normal.y * (m->vel[2] / 4.0f);
+
         intendedPos[1] = m->pos[1];
 
         stepResult = perform_ground_quarter_step(m, intendedPos);
@@ -532,26 +533,28 @@ u32 should_strengthen_gravity_for_jump_ascent(struct MarioState *m) {
     return FALSE;
 }
 
-s8 gravConstant = 1;
+s8 gravConstant_y = 1;
+s8 gravConstant_x = 1;
+s8 gravConstant_z = 1;
 u8 direction = 0; //TODO: lotsa math :(
-void apply_gravity(struct MarioState *m) {
+void apply_gravity_y(struct MarioState *m) {
     if (m->action == ACT_TWIRLING && m->vel[1] < 0.0f) {
         apply_twirl_gravity(m);
     } else if (m->action == ACT_SHOT_FROM_CANNON) {
-        m->vel[1] -= (gravConstant) * 1.0f;
+        m->vel[1] -= (gravConstant_y) * 1.0f;
     } else if (m->action == ACT_LONG_JUMP || m->action == ACT_SLIDE_KICK
                || m->action == ACT_BBH_ENTER_SPIN) {
-        m->vel[1] -= (gravConstant) * 2.0f;
+        m->vel[1] -= (gravConstant_y) * 2.0f;
     } else if (m->action == ACT_LAVA_BOOST || m->action == ACT_FALL_AFTER_STAR_GRAB) {
-        m->vel[1] -= (gravConstant) * 3.2f;
+        m->vel[1] -= (gravConstant_y) * 3.2f;
     } else if (m->action == ACT_GETTING_BLOWN) {
-        m->vel[1] -= (gravConstant) * m->unkC4;
+        m->vel[1] -= (gravConstant_y) * m->unkC4;
     } else if (should_strengthen_gravity_for_jump_ascent(m)) {
         m->vel[1] /= 4.0f;
     } else {
-        m->vel[1] -= (gravConstant) * 4.0f;
+        m->vel[1] -= (gravConstant_y) * 4.0f;
     }
-    if (gravConstant == -1) {
+    if (gravConstant_y == -1) {
         if (m->vel[1] > 75.0f) {
                 m->vel[1] = 75.0f;
         }
@@ -560,6 +563,68 @@ void apply_gravity(struct MarioState *m) {
                 m->vel[1] = -75.0f;
         }
     }
+}
+
+void apply_gravity_x(struct MarioState *m) {
+    if (m->action == ACT_TWIRLING && m->vel[0] < 0.0f) {
+        apply_twirl_gravity(m);
+    } else if (m->action == ACT_SHOT_FROM_CANNON) {
+        m->vel[0] -= (gravConstant_y) * 1.0f;
+    } else if (m->action == ACT_LONG_JUMP || m->action == ACT_SLIDE_KICK
+               || m->action == ACT_BBH_ENTER_SPIN) {
+        m->vel[0] -= (gravConstant_y) * 2.0f;
+    } else if (m->action == ACT_LAVA_BOOST || m->action == ACT_FALL_AFTER_STAR_GRAB) {
+        m->vel[0] -= (gravConstant_y) * 3.2f;
+    } else if (m->action == ACT_GETTING_BLOWN) {
+        m->vel[0] -= (gravConstant_y) * m->unkC4;
+    } else if (should_strengthen_gravity_for_jump_ascent(m)) {
+        m->vel[0] /= 4.0f;
+    } else {
+        m->vel[0] -= (gravConstant_y) * 4.0f;
+    }
+    if (gravConstant_y == -1) {
+        if (m->vel[0] > 75.0f) {
+                m->vel[0] = 75.0f;
+        }
+    } else {
+        if (m->vel[0] < -75.0f) {
+                m->vel[0] = -75.0f;
+        }
+    }
+}
+
+void apply_gravity_z(struct MarioState *m) {
+    if (m->action == ACT_TWIRLING && m->slideVelZ < 0.0f) {
+        apply_twirl_gravity(m);
+    } else if (m->action == ACT_SHOT_FROM_CANNON) {
+        m->slideVelZ -= (gravConstant_y) * 1.0f;
+    } else if (m->action == ACT_LONG_JUMP || m->action == ACT_SLIDE_KICK
+               || m->action == ACT_BBH_ENTER_SPIN) {
+        m->slideVelZ -= (gravConstant_y) * 2.0f;
+    } else if (m->action == ACT_LAVA_BOOST || m->action == ACT_FALL_AFTER_STAR_GRAB) {
+        m->slideVelZ -= (gravConstant_y) * 3.2f;
+    } else if (m->action == ACT_GETTING_BLOWN) {
+        m->slideVelZ -= (gravConstant_y) * m->unkC4;
+    } else if (should_strengthen_gravity_for_jump_ascent(m)) {
+        m->slideVelZ /= 4.0f;
+    } else {
+        m->slideVelZ -= (gravConstant_y) * 4.0f;
+    }
+    if (gravConstant_y == -1) {
+        if (m->slideVelZ > 75.0f) {
+                m->slideVelZ = 75.0f;
+        }
+    } else {
+        if (m->slideVelZ < -75.0f) {
+                m->slideVelZ = -75.0f;
+        }
+    }
+}
+
+void apply_gravity(struct MarioState *m) {
+    apply_gravity_y(m);
+    apply_gravity_x(m);
+    apply_gravity_z(m);
 }
 
 void apply_vertical_wind(struct MarioState *m) {

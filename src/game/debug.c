@@ -9,6 +9,7 @@
 #include "rendering_graph_node.h"
 #include "enhancements/bettercamera.h"
 #include "engine/surface_collision.h"
+#include "engine/wall_collision_special.h"
 #include "mario.h"
 #include "mario_step.h"
 #include "game_init.h"
@@ -489,10 +490,26 @@ void decVal(void) {
 	enteredPass &= ~(0xFF << (24 - (8*passIndex)));
 	enteredPass |= val << (24 - (8 * passIndex));
 }
-
+char myWall[100];
+char myWall2[100];
+char xPos[100];
+char mWall[100];
 void password_show(void) {
 	u8 i;
-    print_text_fmt_int(40, 40, "%d", (gravConstant));
+    struct MarioState *m = gMarioState;
+    f32 x_wallDist = find_surface_xplus(m->pos[0],m->pos[1],m->pos[2],&m->xFloor);
+    f32 x_ceilDist = find_surface_xminus(m->pos[0],m->pos[1],m->pos[2],&m->xCeil);
+    sprintf(myWall, "%08X", m->xFloor);
+    sprintf(myWall2, "%08x", m->xCeil);
+    sprintf(mWall, "%08X", m->wall);
+    sprintf(xPos, "%.2f", m->pos[0]);
+    print_text(55, 55, myWall);
+    print_text(55, 70, myWall2);
+    print_text(55, 95, mWall);
+    print_text(55, 150, xPos);
+    print_text_fmt_int(150, 90, "%d", x_wallDist - m->pos[0]);
+    print_text_fmt_int(150, 115, "%d", m->pos[0] -  x_ceilDist);
+    print_text_fmt_int(40, 40, "%d", (gravConstant_y));
 	for(i = 0; i < 4; i++){
 	    // print_text_fmt_int(55+(16*i), 55+(u8)(currentMask >> (24 - (8*i))),"%d",(u8)(enteredPass >> (24 - (8*i))));
 	}
@@ -525,10 +542,10 @@ void try_print_debug_mario_level_info(void) {
     f32 floorDist = m->pos[1] - m->floorHeight;
     f32 ceilDist = m->ceilHeight - m->pos[1];
     if (floorDist < ceilDist) {
-        gravConstant = 1;
+        gravConstant_y = 1;
     }
     else {
-        gravConstant = -1;
+        gravConstant_y = -1;
     }
 }
 
@@ -602,3 +619,4 @@ void debug_enemy_unknown(s16 *enemyArr) {
     enemyArr[6] = gDebugInfo[DEBUG_PAGE_ENEMYINFO][3];
     enemyArr[7] = gDebugInfo[DEBUG_PAGE_ENEMYINFO][4];
 }
+
