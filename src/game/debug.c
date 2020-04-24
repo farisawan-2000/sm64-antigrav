@@ -497,10 +497,10 @@ char mWall[100];
 void password_show(void) {
 	u8 i;
     struct MarioState *m = gMarioState;
-    f32 x_wallDist = find_surface_xplus(m->pos[0],m->pos[1],m->pos[2],&m->xFloor);
-    f32 x_ceilDist = find_surface_xminus(m->pos[0],m->pos[1],m->pos[2],&m->xCeil);
-    sprintf(myWall, "%08X", m->xFloor);
-    sprintf(myWall2, "%08x", m->xCeil);
+    f32 x_wallDist =find_surface_zplus(m->pos[0],m->pos[1],m->pos[2],&m->zFloor);
+    f32 x_ceilDist =find_surface_zminus(m->pos[0],m->pos[1],m->pos[2],&m->zCeil);
+    sprintf(myWall, "%08X", m->zFloor);
+    sprintf(myWall2, "%08x", m->zCeil);
     sprintf(mWall, "%08X", m->wall);
     sprintf(xPos, "%.2f", m->pos[0]);
     print_text(55, 55, myWall);
@@ -508,8 +508,10 @@ void password_show(void) {
     print_text(55, 95, mWall);
     print_text(55, 150, xPos);
     print_text_fmt_int(150, 90, "%d", x_wallDist - m->pos[0]);
+    m->xFloorDist = x_wallDist - m->pos[0];
+    m->xCeilDist = m->pos[0] -  x_ceilDist;
     print_text_fmt_int(150, 115, "%d", m->pos[0] -  x_ceilDist);
-    print_text_fmt_int(40, 40, "%d", (gravConstant_y));
+    print_text_fmt_int(40, 40, "%d", (gravConstant_x));
 	for(i = 0; i < 4; i++){
 	    // print_text_fmt_int(55+(16*i), 55+(u8)(currentMask >> (24 - (8*i))),"%d",(u8)(enteredPass >> (24 - (8*i))));
 	}
@@ -537,7 +539,7 @@ void password_show(void) {
  * Similar to above, but with level information. (checkinfo, mapinfo,
  * stageinfo)
  */
-void try_print_debug_mario_level_info(void) {
+void mario_update_frame_of_reference(void) {
     struct MarioState *m = gMarioState;
     f32 floorDist = m->pos[1] - m->floorHeight;
     f32 ceilDist = m->ceilHeight - m->pos[1];
@@ -547,6 +549,12 @@ void try_print_debug_mario_level_info(void) {
     else {
         gravConstant_y = -1;
     }
+    if (m->xFloorDist < m->xCeilDist) {
+        gravConstant_x = -1;
+    } else{
+        gravConstant_x = 1;
+    }
+    
 }
 
 /*

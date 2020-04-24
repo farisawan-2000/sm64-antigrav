@@ -23,6 +23,6 @@ extern void reset_debug_objectinfo(void);
 extern void stub_debug_5(void);
 extern void password_show(void);
 extern void try_do_mario_debug_object_spawn(void);
-extern void try_print_debug_mario_level_info(void);
+extern void mario_update_frame_of_reference(void);
 
 #endif /* _DEBUG_H */

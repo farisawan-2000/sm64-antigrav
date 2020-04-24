@@ -312,9 +312,13 @@ struct MarioState
     /*0x5C*/ f32 slideVelZ;
     /*0x60*/ struct Surface *wall;
             struct Surface *xFloor;
+            f32 xFloorDist;
             struct Surface *xCeil;
+            f32 xCeilDist;
             struct Surface *zFloor;
+            f32 zFloorDist;
             struct Surface *zCeil;
+            f32 zCeilDist;
     /*0x64*/ struct Surface *ceil;
     /*0x68*/ struct Surface *floor;
     /*0x6C*/ f32 ceilHeight;

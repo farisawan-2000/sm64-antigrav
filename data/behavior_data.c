@@ -3520,7 +3520,7 @@ const BehaviorScript bhvMario[] = {
     OR_INT(oUnk94, 0x0001),
     SET_HITBOX(/*Radius*/ 37, /*Height*/ 160),
     BEGIN_LOOP(),
-        CALL_NATIVE(try_print_debug_mario_level_info),
+        CALL_NATIVE(mario_update_frame_of_reference),
         CALL_NATIVE(bhv_mario_update),
         CALL_NATIVE(try_do_mario_debug_object_spawn),
     END_LOOP(),
