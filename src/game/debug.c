@@ -368,7 +368,12 @@ static void check_debug_button_seq(void) {
         }
     }
 }
-s8 chkAng(u8 arg) {
+
+#define BOOL_TO_S8(x) (x ? 1 : -1);
+u8 chkAng(u8 arg) {
+    if (arg == 1) {
+        return gravConstant_y == 1;
+    }
     return 1;
 }
 
@@ -495,6 +500,7 @@ void decVal(void) {
 }
 char myWall[100];
 char myWall2[100];
+char myWall3[100];
 char xPos[100];
 char mWall[100];
 void password_show(void) {
@@ -520,12 +526,17 @@ void password_show(void) {
     sprintf(myWall, "%.2f", m->zFloorHeight);
     sprintf(myWall2, "%.2f", m->zCeilHeight);
     sprintf(xPos, "%.2f", m->pos[2]);
-    sprintf(mWall, "%08X",m->zFloor);
+    // if (m->zFloor)
+        sprintf(mWall, "%08X",m->zFloor);
+    // if (m->wall)
+        sprintf(myWall3, "%08X",m->wall);
+    
 
     print_text(60, 25, xPos);
     print_text(60, 40, mWall);
     print_text(60, 55, myWall);
     print_text(60, 70, myWall2);
+    print_text(60, 150, myWall3);
 
 
 	for(i = 0; i < 4; i++){
@@ -581,8 +592,8 @@ void mario_update_frame_of_reference(void) {
     f32 xCeilDist = m->pos[0] -  m->xCeilHeight;
 
 
-    f32 zFloorDist = m->zFloorHeight - m->pos[2];
-    f32 zCeilDist = m->pos[2] - m->zCeilHeight;
+    f32 zFloorDist = m->pos[2] - m->zFloorHeight;
+    f32 zCeilDist = m->zCeilHeight - m->pos[2];
 
     f32 currFrameOfReference = min6f(floorDist, ceilDist, xFloorDist, xCeilDist, zFloorDist, zCeilDist);
 
