@@ -368,6 +368,9 @@ static void check_debug_button_seq(void) {
         }
     }
 }
+s8 chkAng(u8 arg) {
+    return 1;
+}
 
 /*
  * Poll the debug info flags and controller for appropriate presses that
@@ -514,10 +517,12 @@ void password_show(void) {
     print_text_fmt_int(40, 55, "%d", (gravConstant_y));
     print_text_fmt_int(40, 70, "%d", (gravConstant_x));
 
-    sprintf(myWall, "%.2f", m->xFloorHeight);
-    sprintf(myWall2, "%.2f", m->xCeilHeight);
-    sprintf(mWall, "%.2f",m->pos[0]);
+    sprintf(myWall, "%.2f", m->zFloorHeight);
+    sprintf(myWall2, "%.2f", m->zCeilHeight);
+    sprintf(xPos, "%.2f", m->pos[2]);
+    sprintf(mWall, "%08X",m->zFloor);
 
+    print_text(60, 25, xPos);
     print_text(60, 40, mWall);
     print_text(60, 55, myWall);
     print_text(60, 70, myWall2);
@@ -581,8 +586,6 @@ void mario_update_frame_of_reference(void) {
 
     f32 currFrameOfReference = min6f(floorDist, ceilDist, xFloorDist, xCeilDist, zFloorDist, zCeilDist);
 
-    m->zFloorHeight = 99999.0f;
-    m->zCeilHeight = 99999.0f;
 
         if(currFrameOfReference == floorDist){
             gravConstant_y = 1;

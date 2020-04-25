@@ -200,15 +200,15 @@ static struct Surface *find_Zfloor_from_list(struct SurfaceNode *surfaceNode, s3
         z3 = surf->vertex3[0];
 
         // Checking if point is in bounds of the triangle laterally.
-        if ((y1 - y) * (z2 - z1) - (z1 - z) * (y2 - y1) > 0) {
+        if ((z1 - z) * (y2 - y1) - (y1 - y) * (z2 - z1) > 0) {
             continue;
         }
 
         // Slight optimization by checking these later.
-        if ((y2 - y) * (z3 - z2) - (z2 - z) * (y3 - y2) > 0) {
+        if ((z2 - z) * (y3 - y2) - (y2 - y) * (z3 - z2) > 0) {
             continue;
         }
-        if ((y3 - y) * (z1 - z3) - (z3 - z) * (y1 - y3) > 0) {
+        if ((z3 - z) * (y1 - y3) - (y3 - y) * (z1 - z3) > 0) {
             continue;
         }
 
@@ -241,9 +241,9 @@ static struct Surface *find_Zfloor_from_list(struct SurfaceNode *surfaceNode, s3
             //! (Exposed Ceilings) Because any point above a ceiling counts
             //  as interacting with a ceiling, ceilings far below can cause
             // "invisible walls" that are really just exposed ceilings.
-            if (z - (height - -78.0f) > 0.0f) {
-                continue;
-            }
+            // if (z - (height - -78.0f) > 0.0f) {
+            //     continue;
+            // }
             if (z > 0) {
                 if (height - z < dist) {
                     dist = height - z;

@@ -763,10 +763,15 @@ void set_steep_jump_action(struct MarioState *m) {
 /**
  * Set's Marios vertical speed from his forward speed.
  */
+static s8 getConstant(void) {
+    if (gravConstant_y!=0) return gravConstant_y;
+    if (gravConstant_x!=0) return gravConstant_x;
+    if (gravConstant_z!=0) return gravConstant_z;
+}
 static void set_mario_y_vel_based_on_fspeed(struct MarioState *m, f32 initialVelY, f32 multiplier) {
     // get_additive_y_vel_for_jumps is always 0 and a stubbed function.
     // It was likely trampoline related based on code location.
-    m->vel[getFrameOfReference()] = initialVelY + get_additive_y_vel_for_jumps() + m->forwardVel * multiplier;
+    m->vel[getFrameOfReference()] = getConstant() * (initialVelY + get_additive_y_vel_for_jumps() + m->forwardVel * multiplier);
 
     if (m->squishTimer != 0 || m->quicksandDepth > 1.0f) {
         m->vel[getFrameOfReference()] *= 0.5f;
@@ -776,6 +781,7 @@ static void set_mario_y_vel_based_on_fspeed(struct MarioState *m, f32 initialVel
 /**
  * Transitions for a variety of airborne actions.
  */
+
 static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actionArg) {
     f32 fowardVel;
 
@@ -1307,10 +1313,15 @@ void update_mario_joystick_inputs(struct MarioState *m) {
     }
 
     if (m->intendedMag > 0.0f) {
-        if (gLakituState.mode != CAM_MODE_NEWCAM)
-            m->intendedYaw = atan2s(-controller->stickY, controller->stickX) + m->area->camera->yaw;
-        else
+        if (gLakituState.mode != CAM_MODE_NEWCAM){
+            if (gravConstant_y != 0)
+                m->intendedYaw = atan2s(-controller->stickY, controller->stickX) + m->area->camera->yaw;
+            if (gravConstant_x != 0)
+                m->intendedYaw = atan2s(controller->stickY, -controller->stickX) + m->area->camera->yaw;
+        }
+        else{
             m->intendedYaw = atan2s(-controller->stickY, controller->stickX)-newcam_yaw+0x4000;
+        }
         m->input |= INPUT_NONZERO_ANALOG;
     } else {
         m->intendedYaw = m->faceAngle[getFrameOfReference()];

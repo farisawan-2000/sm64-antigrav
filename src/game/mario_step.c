@@ -4,6 +4,7 @@
 #include "engine/math_util.h"
 #include "engine/surface_collision.h"
 #include "mario.h"
+#include "debug.h"
 #include "audio/external.h"
 #include "game_init.h"
 #include "interaction.h"
@@ -228,10 +229,11 @@ void stop_and_set_height_to_floor(struct MarioState *m) {
     m->vel[1] = 0.0f;
 
     //! This is responsible for some downwarps.
-    m->pos[1] = m->floorHeight;
+    if (gravConstant_y == 1)
+        m->pos[1] = m->floorHeight;
 
     vec3f_copy(marioObj->header.gfx.pos, m->pos);
-    vec3s_set(marioObj->header.gfx.angle, m->faceAngle[0], m->faceAngle[1], 0);
+    vec3s_set(marioObj->header.gfx.angle, chkAng(0)*m->faceAngle[0], chkAng(1)*m->faceAngle[1], chkAng(2)*m->faceAngle[2]);
 }
 
 s32 stationary_ground_step(struct MarioState *m) {
@@ -252,7 +254,7 @@ s32 stationary_ground_step(struct MarioState *m) {
 
 
         vec3f_copy(marioObj->header.gfx.pos, m->pos);
-        vec3s_set(marioObj->header.gfx.angle, m->faceAngle[0], m->faceAngle[1], 0);
+        vec3s_set(marioObj->header.gfx.angle, chkAng(0)*m->faceAngle[0], chkAng(1)*m->faceAngle[1], chkAng(2)*m->faceAngle[2]);
     }
 
     return stepResult;
@@ -346,7 +348,7 @@ s32 perform_ground_step(struct MarioState *m) {
 
     m->terrainSoundAddend = mario_get_terrain_sound_addend(m);
     vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
-    vec3s_set(m->marioObj->header.gfx.angle, m->faceAngle[0], m->faceAngle[1], 0);
+    vec3s_set(m->marioObj->header.gfx.angle, chkAng(0)*m->faceAngle[0], chkAng(1)*m->faceAngle[1], chkAng(2)*m->faceAngle[2]);
 
     if (stepResult == GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS) {
         stepResult = GROUND_STEP_HIT_WALL;
@@ -705,7 +707,7 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
     apply_vertical_wind(m);
 
     vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
-    vec3s_set(m->marioObj->header.gfx.angle, m->faceAngle[0], m->faceAngle[1], 0);
+    vec3s_set(m->marioObj->header.gfx.angle, chkAng(0)*m->faceAngle[0], chkAng(1)*m->faceAngle[1], chkAng(2)*m->faceAngle[2]);
 
     return stepResult;
 }
