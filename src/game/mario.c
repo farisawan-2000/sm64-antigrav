@@ -376,11 +376,11 @@ void play_mario_sound(struct MarioState *m, s32 actionSound, s32 marioSound) {
 void mario_set_forward_vel(struct MarioState *m, f32 forwardVel) {
     m->forwardVel = forwardVel;
 
-    m->slideVelX = sins(m->faceAngle[1]) * m->forwardVel;
-    m->slideVelZ = coss(m->faceAngle[1]) * m->forwardVel;
+    m->slideVelX = sins(m->faceAngle[getFrameOfReference()]) * m->forwardVel;
+    m->slideVelZ = coss(m->faceAngle[getFrameOfReference()]) * m->forwardVel;
 
-    m->vel[0] = (f32) m->slideVelX;
-    m->vel[2] = (f32) m->slideVelZ;
+    m->vel[getLateralFrame1()] = (f32) m->slideVelX;
+    m->vel[getLateralFrame2()] = (f32) m->slideVelZ;
 }
 
 /**
@@ -766,10 +766,10 @@ void set_steep_jump_action(struct MarioState *m) {
 static void set_mario_y_vel_based_on_fspeed(struct MarioState *m, f32 initialVelY, f32 multiplier) {
     // get_additive_y_vel_for_jumps is always 0 and a stubbed function.
     // It was likely trampoline related based on code location.
-    m->vel[1] = initialVelY + get_additive_y_vel_for_jumps() + m->forwardVel * multiplier;
+    m->vel[getFrameOfReference()] = initialVelY + get_additive_y_vel_for_jumps() + m->forwardVel * multiplier;
 
     if (m->squishTimer != 0 || m->quicksandDepth > 1.0f) {
-        m->vel[1] *= 0.5f;
+        m->vel[getFrameOfReference()] *= 0.5f;
     }
 }
 
@@ -814,7 +814,7 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
             break;
 
         case ACT_BURNING_JUMP:
-            m->vel[1] = 31.5f;
+            m->vel[getFrameOfReference()] = 31.5f;
             m->forwardVel = 8.0f;
             break;
 
@@ -841,7 +841,7 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
         case ACT_SIDE_FLIP:
             set_mario_y_vel_based_on_fspeed(m, 62.0f, 0.0f);
             m->forwardVel = 8.0f;
-            m->faceAngle[1] = m->intendedYaw;
+            m->faceAngle[getFrameOfReference()] = m->intendedYaw;
             break;
 
         case ACT_STEEP_JUMP:
@@ -851,7 +851,7 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
             break;
 
         case ACT_LAVA_BOOST:
-            m->vel[1] = 84.0f;
+            m->vel[getFrameOfReference()] = 84.0f;
             if (actionArg == 0) {
                 m->forwardVel = 0.0f;
             }
@@ -877,18 +877,18 @@ static u32 set_mario_action_airborne(struct MarioState *m, u32 action, u32 actio
             break;
 
         case ACT_SLIDE_KICK:
-            m->vel[1] = 12.0f;
+            m->vel[getFrameOfReference()] = 12.0f;
             if (m->forwardVel < 32.0f) {
                 m->forwardVel = 32.0f;
             }
             break;
 
         case ACT_JUMP_KICK:
-            m->vel[1] = 20.0f;
+            m->vel[getFrameOfReference()] = 20.0f;
             break;
     }
 
-    m->peakHeight = m->pos[1];
+    m->peakHeight = m->pos[getFrameOfReference()];
     m->flags |= MARIO_UNKNOWN_08;
 
     return action;
@@ -1313,7 +1313,7 @@ void update_mario_joystick_inputs(struct MarioState *m) {
             m->intendedYaw = atan2s(-controller->stickY, controller->stickX)-newcam_yaw+0x4000;
         m->input |= INPUT_NONZERO_ANALOG;
     } else {
-        m->intendedYaw = m->faceAngle[1];
+        m->intendedYaw = m->faceAngle[getFrameOfReference()];
     }
 }
 
@@ -1346,7 +1346,7 @@ void update_mario_geometry_inputs(struct MarioState *m) {
         m->floorAngle = atan2s(m->floor->normal.z, m->floor->normal.x);
         m->terrainSoundAddend = mario_get_terrain_sound_addend(m);
 
-        if ((m->pos[1] > m->waterLevel - 40) && mario_floor_is_slippery(m)) {
+        if ((m->pos[getFrameOfReference()] > m->waterLevel - 40) && mario_floor_is_slippery(m)) {
             m->input |= INPUT_ABOVE_SLIDE;
         }
 
@@ -1359,15 +1359,15 @@ void update_mario_geometry_inputs(struct MarioState *m) {
             }
         }
 
-        if (m->pos[1] > m->floorHeight + 100.0f) {
+        if (m->pos[getFrameOfReference()] > m->floorHeight + 100.0f) {
             m->input |= INPUT_OFF_FLOOR;
         }
 
-        if (m->pos[1] < (m->waterLevel - 10)) {
+        if (m->pos[getFrameOfReference()] < (m->waterLevel - 10)) {
             m->input |= INPUT_IN_WATER;
         }
 
-        if (m->pos[1] < (gasLevel - 100.0f)) {
+        if (m->pos[getFrameOfReference()] < (gasLevel - 100.0f)) {
             m->input |= INPUT_IN_POISON_GAS;
         }
 

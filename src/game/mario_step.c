@@ -420,7 +420,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
         }
 
         m->pos[1] = nextPos[1];
-        return AIR_STEP_HIT_WALL;
+        return AIR_STEP_LANDED;
     }
 
     if ((m->action & ACT_FLAG_RIDING_SHELL) && floorHeight < waterLevel) {
@@ -445,7 +445,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
         return AIR_STEP_LANDED;
     }
 
-    if (nextPos[1] + 160.0f > ceilHeight) {
+    if (nextPos[1] > ceilHeight) {
         if (m->vel[1] >= 0.0f) {
             m->vel[1] = 0.0f;
 
@@ -455,7 +455,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
                 return AIR_STEP_GRABBED_CEILING;
             }
 
-            return AIR_STEP_NONE;
+            return AIR_STEP_LANDED;
         }
 
         //! Potential subframe downwarp->upwarp?
@@ -465,7 +465,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
         }
 
         m->pos[1] = nextPos[1];
-        return AIR_STEP_HIT_WALL;
+        return AIR_STEP_LANDED;
     }
 
     //! When the wall is not completely vertical or there is a slight wall
@@ -495,7 +495,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
         if (wallDYaw < -0x6000 || wallDYaw > 0x6000) {
             m->flags |= MARIO_UNKNOWN_30;
-            return AIR_STEP_HIT_WALL;
+            return AIR_STEP_LANDED;
         }
     }
 
@@ -698,7 +698,7 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
     apply_vertical_wind(m);
 
     vec3f_copy(m->marioObj->header.gfx.pos, m->pos);
-    vec3s_set(m->marioObj->header.gfx.angle, 0, m->faceAngle[1], 0);
+    vec3s_set(m->marioObj->header.gfx.angle, m->faceAngle[0], m->faceAngle[1], 0);
 
     return stepResult;
 }
@@ -715,4 +715,19 @@ void set_vel_from_yaw(struct MarioState *m) {
     m->vel[0] = m->slideVelX = m->forwardVel * sins(m->faceAngle[1]);
     m->vel[1] = 0.0f;
     m->vel[2] = m->slideVelZ = m->forwardVel * coss(m->faceAngle[1]);
+}
+u8 getFrameOfReference(void) {
+    if (gravConstant_y != 0) return 1;
+    if (gravConstant_x != 0) return 0;
+    if (gravConstant_z != 0) return 2;
+}
+u8 getLateralFrame1(void) {
+    if (gravConstant_y != 0) return 0;
+    if (gravConstant_x != 0) return 2;
+    if (gravConstant_z != 0) return 1;
+}
+u8 getLateralFrame2(void) {
+    if (gravConstant_y != 0) return 2;
+    if (gravConstant_x != 0) return 1;
+    if (gravConstant_z != 0) return 0;
 }

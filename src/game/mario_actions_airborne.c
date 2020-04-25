@@ -910,6 +910,12 @@ s32 act_steep_jump(struct MarioState *m) {
     return FALSE;
 }
 
+s8 getConstant(void) {
+    if (gravConstant_y!=0) return gravConstant_y;
+    if (gravConstant_x!=0) return gravConstant_x;
+    if (gravConstant_z!=0) return gravConstant_z;
+}
+
 s32 act_ground_pound(struct MarioState *m) {
     u32 stepResult;
     f32 yOffset;
@@ -926,7 +932,7 @@ s32 act_ground_pound(struct MarioState *m) {
             }
         }
 
-        m->vel[1] = -50.0f;
+        m->vel[getFrameOfReference()] = getConstant()*-50.0f;
         mario_set_forward_vel(m, 0.0f);
 
         set_mario_animation(m, m->actionArg == 0 ? MARIO_ANIM_START_GROUND_POUND

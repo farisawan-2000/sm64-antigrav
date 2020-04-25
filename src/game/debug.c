@@ -497,21 +497,32 @@ char mWall[100];
 void password_show(void) {
 	u8 i;
     struct MarioState *m = gMarioState;
-    f32 x_wallDist =find_surface_zplus(m->pos[0],m->pos[1],m->pos[2],&m->zFloor);
-    f32 x_ceilDist =find_surface_zminus(m->pos[0],m->pos[1],m->pos[2],&m->zCeil);
-    sprintf(myWall, "%08X", m->zFloor);
-    sprintf(myWall2, "%08x", m->zCeil);
-    sprintf(mWall, "%08X", m->wall);
-    sprintf(xPos, "%.2f", m->pos[0]);
-    print_text(55, 55, myWall);
-    print_text(55, 70, myWall2);
-    print_text(55, 95, mWall);
-    print_text(55, 150, xPos);
-    print_text_fmt_int(150, 90, "%d", x_wallDist - m->pos[0]);
-    m->xFloorDist = x_wallDist - m->pos[0];
-    m->xCeilDist = m->pos[0] -  x_ceilDist;
-    print_text_fmt_int(150, 115, "%d", m->pos[0] -  x_ceilDist);
-    print_text_fmt_int(40, 40, "%d", (gravConstant_x));
+
+    f32 x_wallDist =find_surface_xplus(m->pos[0],m->pos[1],m->pos[2],&m->xFloor);
+    f32 x_ceilDist =find_surface_xminus(m->pos[0],m->pos[1],m->pos[2],&m->xCeil);
+    f32 z_wallDist =find_surface_zplus(m->pos[0],m->pos[1],m->pos[2],&m->zFloor);
+    f32 z_ceilDist =find_surface_zminus(m->pos[0],m->pos[1],m->pos[2],&m->zCeil);
+
+    m->xFloorHeight = x_wallDist;
+    m->xCeilHeight = x_ceilDist;
+
+    m->zFloorHeight = z_wallDist;
+    m->zCeilHeight = z_ceilDist;
+
+    // DEBUG PRINTS
+    print_text_fmt_int(40, 40, "%d", (gravConstant_z));
+    print_text_fmt_int(40, 55, "%d", (gravConstant_y));
+    print_text_fmt_int(40, 70, "%d", (gravConstant_x));
+
+    sprintf(myWall, "%.2f", m->xFloorHeight);
+    sprintf(myWall2, "%.2f", m->xCeilHeight);
+    sprintf(mWall, "%.2f",m->pos[0]);
+
+    print_text(60, 40, mWall);
+    print_text(60, 55, myWall);
+    print_text(60, 70, myWall2);
+
+
 	for(i = 0; i < 4; i++){
 	    // print_text_fmt_int(55+(16*i), 55+(u8)(currentMask >> (24 - (8*i))),"%d",(u8)(enteredPass >> (24 - (8*i))));
 	}
@@ -539,21 +550,75 @@ void password_show(void) {
  * Similar to above, but with level information. (checkinfo, mapinfo,
  * stageinfo)
  */
+#define ABSF(x) (x < 0.0f ? -x : x)
+f32 min6f(f32 a, f32 b, f32 c, f32 d, f32 e, f32 f) {
+    f32 a0, a1, a2;
+    a0 = (ABSF(a) < ABSF(b)) ? ABSF(a) : ABSF(b);
+    a1 = (ABSF(c) < ABSF(d)) ? ABSF(c) : ABSF(d);
+    a2 = (ABSF(e) < ABSF(f)) ? ABSF(e) : ABSF(f);
+    if (a1 < a0) {
+        a0 = a1;
+    }
+
+    if (a2 < a0) {
+        a0 = a2;
+    }
+
+    return a0;
+}
+//TODO: prioritize floor collision
 void mario_update_frame_of_reference(void) {
     struct MarioState *m = gMarioState;
     f32 floorDist = m->pos[1] - m->floorHeight;
     f32 ceilDist = m->ceilHeight - m->pos[1];
-    if (floorDist < ceilDist) {
-        gravConstant_y = 1;
-    }
-    else {
-        gravConstant_y = -1;
-    }
-    if (m->xFloorDist < m->xCeilDist) {
-        gravConstant_x = -1;
-    } else{
-        gravConstant_x = 1;
-    }
+
+    f32 xFloorDist = m->xFloorHeight - m->pos[0];
+    f32 xCeilDist = m->pos[0] -  m->xCeilHeight;
+
+
+    f32 zFloorDist = m->zFloorHeight - m->pos[2];
+    f32 zCeilDist = m->pos[2] - m->zCeilHeight;
+
+    f32 currFrameOfReference = min6f(floorDist, ceilDist, xFloorDist, xCeilDist, zFloorDist, zCeilDist);
+
+    m->zFloorHeight = 99999.0f;
+    m->zCeilHeight = 99999.0f;
+
+        if(currFrameOfReference == floorDist){
+            gravConstant_y = 1;
+            gravConstant_x = gravConstant_z = 0;
+            m->faceAngle[0] = 0;
+        }
+        else if(currFrameOfReference == ceilDist){
+            gravConstant_y = -1;
+            // m->top = m->floor;
+            // m->bottom = m->ceil;
+            gravConstant_x = gravConstant_z = 0;
+            m->faceAngle[0] = 0x8000;
+        }
+        else if(currFrameOfReference == xFloorDist){
+            gravConstant_x = -1;
+            gravConstant_y = gravConstant_z = 0;
+            m->faceAngle[0] = 0xC000;
+        }
+        else if(currFrameOfReference == xCeilDist){
+            gravConstant_x = 1;
+            gravConstant_y = gravConstant_z = 0;
+            m->faceAngle[0] = 0xC000;
+        }
+        else if(currFrameOfReference == zFloorDist){
+            gravConstant_z = 1;
+            gravConstant_x = gravConstant_y = 0;
+            m->faceAngle[2] = 0x4000;
+        }
+        else if(currFrameOfReference == zCeilDist){
+            gravConstant_z = -1;
+            gravConstant_x = gravConstant_y = 0;
+            m->faceAngle[2] = 0xC000;
+        } else {
+            gravConstant_y = 1;
+            gravConstant_x = gravConstant_z = 0;
+        }
     
 }
 
