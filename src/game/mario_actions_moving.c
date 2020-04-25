@@ -86,7 +86,7 @@ void play_step_sound(struct MarioState *m, s16 frame1, s16 frame2) {
 }
 
 void align_with_floor(struct MarioState *m) {
-    m->pos[1] = m->floorHeight;
+    m->pos[getFrameOfReference()] = m->floorHeight;
     mtxf_align_terrain_triangle(D_80339F50[m->unk00], m->pos, m->faceAngle[1], 40.0f);
     m->marioObj->header.gfx.throwMatrix = &D_80339F50[m->unk00];
 }
@@ -199,9 +199,9 @@ void update_sliding_angle(struct MarioState *m, f32 accel, f32 lossFactor) {
 
     m->faceAngle[1] = m->slideYaw + newFacingDYaw;
 
-    m->vel[0] = m->slideVelX;
-    m->vel[1] = 0.0f;
-    m->vel[2] = m->slideVelZ;
+    m->vel[getLateralFrame1()] = m->slideVelX;
+    m->vel[getFrameOfReference()] = 0.0f;
+    m->vel[getLateralFrame2()] = m->slideVelZ;
 
     mario_update_moving_sand(m);
     mario_update_windy_ground(m);
@@ -325,9 +325,9 @@ void apply_slope_accel(struct MarioState *m) {
     m->slideVelX = m->forwardVel * sins(m->faceAngle[1]);
     m->slideVelZ = m->forwardVel * coss(m->faceAngle[1]);
 
-    m->vel[0] = m->slideVelX;
-    m->vel[1] = 0.0f;
-    m->vel[2] = m->slideVelZ;
+    m->vel[getLateralFrame1()] = m->slideVelX;
+    m->vel[getFrameOfReference()] = 0.0f;
+    m->vel[getLateralFrame2()] = m->slideVelZ;
 
     mario_update_moving_sand(m);
     mario_update_windy_ground(m);
@@ -1408,8 +1408,8 @@ void common_slide_action(struct MarioState *m, u32 endAction, u32 airAction, s32
 
                 m->slideYaw = wallAngle - (s16)(m->slideYaw - wallAngle) + 0x8000;
 
-                m->vel[0] = m->slideVelX = slideSpeed * sins(m->slideYaw);
-                m->vel[2] = m->slideVelZ = slideSpeed * coss(m->slideYaw);
+                m->vel[getLateralFrame1()] = m->slideVelX = slideSpeed * sins(m->slideYaw);
+                m->vel[getLateralFrame2()] = m->slideVelZ = slideSpeed * coss(m->slideYaw);
             }
 
             align_with_floor(m);

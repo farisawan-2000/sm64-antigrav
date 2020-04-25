@@ -247,7 +247,9 @@ s32 stationary_ground_step(struct MarioState *m) {
         stepResult = perform_ground_step(m);
     } else {
         //! This is responsible for several stationary downwarps.
-        m->pos[1] = m->floorHeight;
+        if (gravConstant_y == 1)
+            m->pos[1] = m->floorHeight;
+
 
         vec3f_copy(marioObj->header.gfx.pos, m->pos);
         vec3s_set(marioObj->header.gfx.angle, m->faceAngle[0], m->faceAngle[1], 0);
@@ -328,10 +330,13 @@ s32 perform_ground_step(struct MarioState *m) {
     Vec3f intendedPos;
 
     for (i = 0; i < 4; i++) {
-            intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / 4.0f);
+
+            if (gravConstant_x == 0)
+                intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / 4.0f);
+            else intendedPos[0] = m->pos[0];
             intendedPos[2] = m->pos[2] + m->floor->normal.y * (m->vel[2] / 4.0f);
 
-        intendedPos[1] = m->pos[1];
+            intendedPos[1] = m->pos[1] + (m->vel[1] / 4.0f);
 
         stepResult = perform_ground_quarter_step(m, intendedPos);
         if (stepResult == GROUND_STEP_LEFT_GROUND || stepResult == GROUND_STEP_HIT_WALL_STOP_QSTEPS) {
