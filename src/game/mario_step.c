@@ -293,7 +293,9 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
         vec3f_copy(m->pos, nextPos);
         m->floor = floor;
         m->floorHeight = floorHeight;
-        return GROUND_STEP_LEFT_GROUND;
+        if (gravConstant_y == 1)
+            return GROUND_STEP_LEFT_GROUND;
+        else return GROUND_STEP_NONE;
     }
 
     if (floorHeight + 160.0f >= ceilHeight) {
