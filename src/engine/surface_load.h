@@ -18,8 +18,10 @@ enum
 
 typedef struct SurfaceNode SpatialPartitionCell[3];
 
-extern SpatialPartitionCell gStaticSurfacePartition[16][16];
-extern SpatialPartitionCell gDynamicSurfacePartition[16][16];
+#define CELL_COUNT 4
+
+extern SpatialPartitionCell gStaticSurfacePartition[CELL_COUNT][CELL_COUNT];
+extern SpatialPartitionCell gDynamicSurfacePartition[CELL_COUNT][CELL_COUNT];
 extern struct SurfaceNode *sSurfaceNodePool;
 extern struct Surface *sSurfacePool;
 extern s16 sSurfacePoolSize;

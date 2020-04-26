@@ -5,6 +5,7 @@
 #include "game/debug.h"
 #include "game/camera.h"
 #include "game/mario.h"
+#include "game/mario_step.h"
 #include "behavior_script.h"
 #include "surface_collision.h"
 #include "surface_load.h"
@@ -306,7 +307,7 @@ static struct Surface *find_ceil_from_list(struct SurfaceNode *surfaceNode, s32 
 /**
  * Find the lowest ceiling above a given position and return the height.
  */
-f32 find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
+f32 _find_ceil(f32 posX, f32 posY, f32 posZ, struct Surface **pceil) {
     s16 cellZ, cellX;
     struct Surface *ceil, *dynamicCeil;
     struct SurfaceNode *surfaceList;
@@ -512,7 +513,7 @@ f32 unused_find_dynamic_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfl
 /**
  * Find the highest floor under a given position and return the height.
  */
-f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
+f32 _find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     s16 cellZ, cellX;
 
     struct Surface *floor, *dynamicFloor;
@@ -581,6 +582,32 @@ f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
     gNumCalls.floor += 1;
 
     return height;
+}
+
+f32 __ceil(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
+    return _find_ceil(xPos, yPos, zPos, pfloor);
+}
+
+f32 find_floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
+    // if (gravConstant_y == 1) {
+        return  _find_floor(xPos, yPos, zPos, pfloor);
+    // }
+    // else {
+        // return __ceil(xPos, yPos, zPos, pfloor);
+    // }
+}
+
+f32 __floor(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
+    return _find_ceil(xPos, yPos, zPos, pfloor);
+}
+
+f32 find_ceil(f32 xPos, f32 yPos, f32 zPos, struct Surface **pfloor) {
+    // if (gravConstant_y == 1) {
+        return  _find_ceil(xPos, yPos, zPos, pfloor);
+    // }
+    // else {
+        // return __floor(xPos, yPos, zPos, pfloor);
+    // }
 }
 
 /**************************************************

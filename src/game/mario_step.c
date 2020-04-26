@@ -319,7 +319,7 @@ static s32 perform_ground_quarter_step(struct MarioState *m, Vec3f nextPos) {
         if (wallDYaw <= -0x2AAA && wallDYaw >= -0x5555) {
             return GROUND_STEP_NONE;
         }
-
+        m->pos[1]+=100.0f;
         return GROUND_STEP_HIT_WALL_CONTINUE_QSTEPS;
     }
 
@@ -335,7 +335,7 @@ s32 perform_ground_step(struct MarioState *m) {
 
             if (gravConstant_x == 0)
                 intendedPos[0] = m->pos[0] + m->floor->normal.y * (m->vel[0] / 4.0f);
-            else intendedPos[0] = m->pos[0];
+            else intendedPos[0] = m->pos[0] + (m->vel[0] / 4.0f);
             intendedPos[2] = m->pos[2] + m->floor->normal.y * (m->vel[2] / 4.0f);
 
             intendedPos[1] = m->pos[1] + (m->vel[1] / 4.0f);
@@ -362,7 +362,7 @@ u32 check_ledge_grab(struct MarioState *m, struct Surface *wall, Vec3f intendedP
     f32 displacementX;
     f32 displacementZ;
 
-    if (m->vel[1] > 0) {
+    if (m->vel[getFrameOfReference()] > 0) {
         return 0;
     }
 
@@ -454,9 +454,9 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
         return AIR_STEP_LANDED;
     }
 
-    if (nextPos[1] > ceilHeight) {
-        if (m->vel[1] >= 0.0f) {
-            m->vel[1] = 0.0f;
+    if (nextPos[getFrameOfReference()] > ceilHeight) {
+        if (m->vel[getFrameOfReference()] >= 0.0f) {
+            m->vel[getFrameOfReference()] = 0.0f;
 
             return AIR_STEP_LANDED;
         }

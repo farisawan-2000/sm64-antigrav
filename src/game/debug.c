@@ -585,15 +585,15 @@ f32 min6f(f32 a, f32 b, f32 c, f32 d, f32 e, f32 f) {
 //TODO: prioritize floor collision
 void mario_update_frame_of_reference(void) {
     struct MarioState *m = gMarioState;
-    f32 floorDist = m->pos[1] - m->floorHeight;
-    f32 ceilDist = m->ceilHeight - m->pos[1];
+    f32 floorDist = ( m->pos[1] - m->floorHeight);
+    f32 ceilDist = ( m->ceilHeight - m->pos[1]);
 
-    f32 xFloorDist = m->xFloorHeight - m->pos[0];
-    f32 xCeilDist = m->pos[0] -  m->xCeilHeight;
+    f32 xFloorDist = ( m->xFloorHeight - m->pos[0]);
+    f32 xCeilDist = ( m->pos[0] -  m->xCeilHeight);
 
 
-    f32 zFloorDist = m->pos[2] - m->zFloorHeight;
-    f32 zCeilDist = m->zCeilHeight - m->pos[2];
+    f32 zFloorDist = ( m->pos[2] - m->zFloorHeight);
+    f32 zCeilDist = ( m->zCeilHeight - m->pos[2]);
 
     f32 currFrameOfReference = min6f(floorDist, ceilDist, xFloorDist, xCeilDist, zFloorDist, zCeilDist);
 
@@ -632,6 +632,7 @@ void mario_update_frame_of_reference(void) {
         } else {
             gravConstant_y = 1;
             gravConstant_x = gravConstant_z = 0;
+            m->faceAngle[0] = 0;
         }
     
 }
