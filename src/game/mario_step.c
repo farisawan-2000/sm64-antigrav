@@ -4,7 +4,9 @@
 #include "engine/math_util.h"
 #include "engine/surface_collision.h"
 #include "mario.h"
+#include "print.h"
 #include "debug.h"
+#include "include/libc/stdio.h"
 #include "audio/external.h"
 #include "game_init.h"
 #include "interaction.h"
@@ -396,6 +398,11 @@ u32 check_ledge_grab(struct MarioState *m, struct Surface *wall, Vec3f intendedP
     return 1;
 }
 
+// s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepArg) {
+//     m->pos[1] = intendedPos[1];
+//     return AIR_STEP_LANDED;
+// }
+
 s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepArg) {
     s16 wallDYaw;
     Vec3f nextPos;
@@ -657,7 +664,7 @@ void apply_vertical_wind(struct MarioState *m) {
         }
     }
 }
-
+char airResult[100];
 s32 perform_air_step(struct MarioState *m, u32 stepArg) {
     Vec3f intendedPos;
     s32 i;
@@ -680,7 +687,8 @@ s32 perform_air_step(struct MarioState *m, u32 stepArg) {
         //! On one qf, hit OOB/ceil/wall to store the 2 return value, and continue
         // getting 0s until your last qf. Graze a wall on your last qf, and it will
         // return the stored 2 with a sharply angled reference wall. (some gwks)
-
+        sprintf(airResult, "%08X", quarterStepResult);
+        print_text(60,40 + 8 * i, airResult);
         if (quarterStepResult != AIR_STEP_NONE) {
             stepResult = quarterStepResult;
         }

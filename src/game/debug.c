@@ -406,51 +406,7 @@ static void try_change_debug_page(void) {
  * sDebugSysCursor. This is used to adjust enemy and effect behaviors
  * on the fly. (unused)
  */
-#ifndef VERSION_SH
-static
-#endif
 void try_modify_debug_controls(void) {
-    s32 sp4;
-
-    if (gPlayer1Controller->buttonPressed & Z_TRIG) {
-        sNoExtraDebug ^= 1;
-    }
-    if (!(gPlayer1Controller->buttonDown & (L_TRIG | R_TRIG)) && sNoExtraDebug == FALSE) {
-        sp4 = 1;
-        if (gPlayer1Controller->buttonDown & B_BUTTON) {
-            sp4 = 100;
-        }
-
-        if (sDebugInfoDPadMask & U_JPAD) {
-            sDebugSysCursor -= 1;
-            if (sDebugSysCursor < 0) {
-                sDebugSysCursor = 0;
-            }
-        }
-
-        if (sDebugInfoDPadMask & D_JPAD) {
-            sDebugSysCursor += 1;
-            if (sDebugSysCursor >= 8) {
-                sDebugSysCursor = 7;
-            }
-        }
-
-        if (sDebugInfoDPadMask & L_JPAD) {
-            // we allow the player while in this mode to modify the debug controls. This is
-            // so the playtester can adjust enemy behavior and parameters on the fly, since
-            // various behaviors try to update their behaviors from gDebugInfo[4] and [5].
-            if (gPlayer1Controller->buttonDown & A_BUTTON) {
-                gDebugInfo[sDebugPage][sDebugSysCursor] =
-                    gDebugInfoOverwrite[sDebugPage][sDebugSysCursor];
-            } else {
-                gDebugInfo[sDebugPage][sDebugSysCursor] = gDebugInfo[sDebugPage][sDebugSysCursor] - sp4;
-            }
-        }
-
-        if (sDebugInfoDPadMask & R_JPAD) {
-            gDebugInfo[sDebugPage][sDebugSysCursor] = gDebugInfo[sDebugPage][sDebugSysCursor] + sp4;
-        }
-    }
 }
 
 // possibly a removed debug control (TODO: check DD)
@@ -532,11 +488,11 @@ void password_show(void) {
         sprintf(myWall3, "%08X",m->wall);
     
 
-    print_text(60, 25, xPos);
-    print_text(60, 40, mWall);
-    print_text(60, 55, myWall);
-    print_text(60, 70, myWall2);
-    print_text(60, 150, myWall3);
+    // print_text(60, 25, xPos);
+    // print_text(60, 40, mWall);
+    // print_text(60, 55, myWall);
+    // print_text(60, 70, myWall2);
+    // print_text(60, 150, myWall3);
 
 
 	for(i = 0; i < 4; i++){
@@ -569,14 +525,14 @@ void password_show(void) {
 #define ABSF(x) (x < 0.0f ? -x : x)
 f32 min6f(f32 a, f32 b, f32 c, f32 d, f32 e, f32 f) {
     f32 a0, a1, a2;
-    a0 = (ABSF(a) < ABSF(b)) ? ABSF(a) : ABSF(b);
-    a1 = (ABSF(c) < ABSF(d)) ? ABSF(c) : ABSF(d);
-    a2 = (ABSF(e) < ABSF(f)) ? ABSF(e) : ABSF(f);
-    if (a1 < a0) {
+    a0 = (ABSF(a) < ABSF(b)) ? a : b;
+    a1 = (ABSF(c) < ABSF(d)) ? c : d;
+    a2 = (ABSF(e) < ABSF(f)) ? e : f;
+    if (ABSF(a1) < ABSF(a0)) {
         a0 = a1;
     }
 
-    if (a2 < a0) {
+    if (ABSF(a2) < ABSF(a0)) {
         a0 = a2;
     }
 
