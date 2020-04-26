@@ -6,6 +6,7 @@ const GeoLayout castle_grounds_area_1_myLevel[] = {
 			GEO_ANIMATED_PART(1, 0, 0, 0, NULL),
 			GEO_OPEN_NODE(),
 				GEO_ANIMATED_PART(1, 0, 0, 0, castle_grounds_Cube_mesh),
+				GEO_ANIMATED_PART(1, -25, 1762, 8, castle_grounds_Icosphere_mesh),
 			GEO_CLOSE_NODE(),
 		GEO_CLOSE_NODE(),
 	GEO_CLOSE_NODE(),
